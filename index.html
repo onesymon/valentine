@@ -118,8 +118,92 @@
                 opacity: 0;
             }
         }
+        /* Modal Overlay */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 999;
+}
+
+.modal.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Modal Box */
+.modal-content {
+    background: #fff;
+    color: #ff4d6d;
+    padding: 40px;
+    border-radius: 25px;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    animation: popIn 0.5s ease;
+}
+
+.modal-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2em;
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    font-size: 1.1em;
+    color: #444;
+}
+
+.modal-content button {
+    margin-top: 25px;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    background: #ff4d6d;
+    color: white;
+}
+
+.modal-content button:hover {
+    transform: scale(1.05);
+}
+
+/* Animation */
+@keyframes popIn {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
         </style>
+        
         </head>
+<!-- Success Modal -->
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <h2>She said YES 💘</h2>
+    <p>
+      You just made my heart the happiest place in the world.<br>
+      I can’t wait to celebrate this moment with you 💖
+    </p>
+    <button onclick="closeModal()">Close 💕</button>
+  </div>
+</div>
 
         <body>
 
@@ -142,43 +226,14 @@
 
         <div class="buttons">
             <button class="yes" onclick="yesClicked()">Yes, I will 💖</button>
-            <button class="no" onclick="alert('Take your time… I’ll still be smiling 😊')">Let me think 🥺</button>
+          <button class="no" id="noBtn">Let me think 🥺</button>
+
         </div>
-<!-- EmailJS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/emailjs@3/dist/email.min.js"></script>
-
 <script>
-(function(){
-    emailjs.init("toCEWdEqn7GkONoMn");
-})();
-</script>
-        <script>
-function yesClicked() {
-
-    const templateParams = {
-        message: "She said YES 💖",
-        time: new Date().toLocaleString()
-    };
-
-    emailjs.send(
-        "service_mk2sj2b",
-        "template_zedj4wk",
-        templateParams
-    ).then(() => {
-
-        alert("You just made me the happiest person alive 💕");
-
-    }).catch((error) => {
-
-        alert("Oops! Email failed to send 😢");
-        console.error("EmailJS error:", error);
-
-    });
-}
 
 // Floating hearts
 setInterval(() => {
-    const heart = document.createElement("div");
+    const heart = document.createElement("div");    
     heart.className = "floating-heart";
     heart.innerHTML = "❤️";
     heart.style.left = Math.random() * 100 + "vw";
@@ -190,6 +245,57 @@ setInterval(() => {
 </script>
 
     
+<script>
+function yesClicked() {
+    document.getElementById("successModal").classList.add("show");
+}
+
+function closeModal() {
+    document.getElementById("successModal").classList.remove("show");
+}
+
+/* Floating hearts (keep this) */
+setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "floating-heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 20 + "px";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 6000);
+}, 500);
+const noBtn = document.getElementById("noBtn");
+
+// Move function
+function moveButton() {
+    const parentWidth = window.innerWidth - noBtn.offsetWidth;
+    const parentHeight = window.innerHeight - noBtn.offsetHeight;
+
+    const randomX = Math.random() * parentWidth;
+    const randomY = Math.random() * parentHeight;
+
+    noBtn.style.position = "absolute";
+    noBtn.style.left = randomX + "px";
+    noBtn.style.top = randomY + "px";
+}
+
+// Desktop: dodge when cursor is near
+document.addEventListener("mousemove", (e) => {
+    const rect = noBtn.getBoundingClientRect();
+    const distance = Math.hypot(
+        e.clientX - (rect.left + rect.width / 2),
+        e.clientY - (rect.top + rect.height / 2)
+    );
+    if(distance < 80) {
+        moveButton();
+    }
+});
+
+// Mobile / Touch: dodge when tapped
+noBtn.addEventListener("touchstart", moveButton);
+
+</script>
 
         </body>
         </html>
